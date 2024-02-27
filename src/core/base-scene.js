@@ -81,9 +81,9 @@ const EtagereTexture = textureLoader.load('/textures/etagere.jpg')
 EtagereTexture.flipY = false
 EtagereTexture.colorSpace = THREE.SRGBColorSpace
 
-const LogoTexture = textureLoader.load('/textures/github.jpg')
-LogoTexture.flipY = false
-LogoTexture.colorSpace = THREE.SRGBColorSpace
+const GithubTexture = textureLoader.load('/textures/github.jpg')
+GithubTexture.flipY = false
+GithubTexture.colorSpace = THREE.SRGBColorSpace
 
 const KeyboardTexture = textureLoader.load('/textures/keyboard.jpg')
 KeyboardTexture.flipY = false
@@ -110,7 +110,7 @@ const WallMaterial = new THREE.MeshBasicMaterial({ map: WallTexture })
 const PosterMaterial = new THREE.MeshBasicMaterial({ map: PosterTexture })
 const DeskMaterial = new THREE.MeshBasicMaterial({ map: DeskTexture })
 const EtagereMaterial = new THREE.MeshBasicMaterial({ map: EtagereTexture })
-const LogoMaterial = new THREE.MeshBasicMaterial({ map: LogoTexture })
+const GithubMaterial = new THREE.MeshBasicMaterial({ map: GithubTexture })
 const KeyboardMaterial = new THREE.MeshBasicMaterial({ map: KeyboardTexture })
 const WindowMaterial = new THREE.MeshBasicMaterial({ map: WindowTexture })
 const DiceMaterial = new THREE.MeshBasicMaterial({ map: DiceTexture })
@@ -169,8 +169,8 @@ gltfLoader.load(
             if (child.isMesh && child.name.startsWith("Etagere")) {
                 child.material = EtagereMaterial;
             }
-            if (child.isMesh && child.name.startsWith("logo")) {
-                child.material = LogoMaterial;
+            if (child.isMesh && child.name.startsWith("Github")) {
+                child.material = GithubMaterial;
             }
             if (child.isMesh && child.name.startsWith("Keyboard")) {
                 child.material = KeyboardMaterial;
@@ -224,16 +224,19 @@ window.addEventListener('resize', () =>
 
     //Update fireflies
 })
-
+const axesHelper = new THREE.AxesHelper( 5 );
+axesHelper.position.y = 5
+scene.add( axesHelper );
 /**
  * Camera
  */
 // Base camera
-const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 4
-camera.position.y = 2
-camera.position.z = 4
+const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 1, 100)
+camera.position.x = 8
+camera.position.y = 14
+camera.position.z = 8
 scene.add(camera)
+
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
