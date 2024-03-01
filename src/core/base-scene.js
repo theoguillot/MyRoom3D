@@ -85,6 +85,10 @@ const GithubTexture = textureLoader.load('/textures/github.jpg')
 GithubTexture.flipY = false
 GithubTexture.colorSpace = THREE.SRGBColorSpace
 
+const LinkedinTexture = textureLoader.load('/textures/linkedin.jpg')
+LinkedinTexture.flipY = false
+LinkedinTexture.colorSpace = THREE.SRGBColorSpace
+
 const KeyboardTexture = textureLoader.load('/textures/keyboard.jpg')
 KeyboardTexture.flipY = false
 KeyboardTexture.colorSpace = THREE.SRGBColorSpace
@@ -97,6 +101,25 @@ const DiceTexture = textureLoader.load('/textures/dice.jpg')
 DiceTexture.flipY = false
 DiceTexture.colorSpace = THREE.SRGBColorSpace
 
+const CubeTexture = textureLoader.load('/textures/cube.jpg')
+CubeTexture.flipY = false
+CubeTexture.colorSpace = THREE.SRGBColorSpace
+
+const Book1Texture = textureLoader.load('/textures/book1.jpg')
+Book1Texture.flipY = false
+Book1Texture.colorSpace = THREE.SRGBColorSpace
+
+const Book2Texture = textureLoader.load('/textures/book2.jpg')
+Book2Texture.flipY = false
+Book2Texture.colorSpace = THREE.SRGBColorSpace
+
+const Book3Texture = textureLoader.load('/textures/book3.jpg')
+Book3Texture.flipY = false
+Book3Texture.colorSpace = THREE.SRGBColorSpace
+
+const PlantTexture = textureLoader.load('/textures/plant.jpg')
+PlantTexture.flipY = false
+PlantTexture.colorSpace = THREE.SRGBColorSpace
 /**
  * Materials
  */
@@ -114,6 +137,12 @@ const GithubMaterial = new THREE.MeshBasicMaterial({ map: GithubTexture })
 const KeyboardMaterial = new THREE.MeshBasicMaterial({ map: KeyboardTexture })
 const WindowMaterial = new THREE.MeshBasicMaterial({ map: WindowTexture })
 const DiceMaterial = new THREE.MeshBasicMaterial({ map: DiceTexture })
+const CubeMaterial = new THREE.MeshBasicMaterial({ map: CubeTexture })
+const Book1Material = new THREE.MeshBasicMaterial({ map: Book1Texture })
+const Book2Material = new THREE.MeshBasicMaterial({ map: Book2Texture })
+const PlantMaterial = new THREE.MeshBasicMaterial({ map: PlantTexture })
+const Book3Material = new THREE.MeshBasicMaterial({ map: Book3Texture })
+const LinkedinMaterial = new THREE.MeshBasicMaterial({ map: LinkedinTexture })
 
 
 
@@ -181,6 +210,26 @@ gltfLoader.load(
             if (child.isMesh && child.name.startsWith("Dice")) {
                 child.material = DiceMaterial;
             }
+            if (child.isMesh && child.name.startsWith("Cube")) {
+                child.material = CubeMaterial;
+            }
+            if (child.isMesh && child.name.startsWith("book1")) {
+                child.material = Book1Material;
+            }
+            if (child.isMesh && child.name.startsWith("book2")) {
+                child.material = Book2Material;
+            }
+            if (child.isMesh && child.name.startsWith("book3")) {
+                child.material = Book3Material;
+            }
+            if (child.isMesh && child.name.startsWith("plant")) {
+                child.material = PlantMaterial;
+            }
+            if (child.isMesh && child.name.startsWith("linkedin")) {
+                child.material = LinkedinMaterial;
+            }
+
+            
             //console.log(child.name)
         });
 
@@ -225,29 +274,28 @@ window.addEventListener('resize', () =>
     //Update fireflies
 })
 const axesHelper = new THREE.AxesHelper( 5 );
-axesHelper.position.y = 5
+axesHelper.position.y = 1
 scene.add( axesHelper );
 /**
  * Camera
  */
 // Base camera
-const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 1, 100)
-camera.position.x = 8
-camera.position.y = 14
-camera.position.z = 8
-scene.add(camera)
+var camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 1, 1000 );
+    camera.position.set(10, 10, 12.5); 
+    scene.add(camera)
+    
 
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
-
+controls.target.set(0, 2.5, 0);
 /**
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
-    antialias: true
+    antialias: true,
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -284,6 +332,7 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
     //update fireflies
+   
 
     // Update controls
     controls.update()
