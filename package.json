@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "lil-gui": "^0.19.0",
+    "pdfjs-dist": "^4.0.379",
     "three": "^0.158.0"
   }
 }

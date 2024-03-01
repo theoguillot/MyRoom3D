@@ -3,8 +3,6 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-
-
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
@@ -241,15 +239,6 @@ gltfLoader.load(
 
 
 /**
- * Fireflies
- */
-//Geometry
-
-
-//Material
-
-//POints
-/**
  * Sizes
  */
 const sizes = {
@@ -322,6 +311,8 @@ outlinePass.edgeStrength = 10; // Adjust the strength of the outline
 composer.addPass(outlinePass);
 const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);  
 composer.addPass(gammaCorrectionPass);
+
+
 /**
  * Animate
  */
