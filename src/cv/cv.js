@@ -1,6 +1,5 @@
 import * as THREE from 'three';
-import { TWEEN } from '/node_modules/three/examples/jsm/libs/tween.module.min.js';
-import RoomObjectAbstract from '../room-object.abstract';
+import TWEEN from '@tweenjs/tween.js';
 import { CV_CONFIG, CV_LINKS_CONFIG } from './data/cv-config';
 import * as pdfjs from 'pdfjs-dist/build/pdf';
 import Loader from '../../../../core/loader';
@@ -12,7 +11,7 @@ import { STATIC_MODE_CAMERA_CONFIG } from '../../camera-controller/data/camera-c
 import { Black } from 'black-engine';
 import SCENE_CONFIG from '../../../../core/configs/scene-config';
 
-export default class CV extends RoomObjectAbstract {
+export default class CV  {
   constructor(meshesGroup, roomObjectType, audioListener) {
     super(meshesGroup, roomObjectType, audioListener);
 

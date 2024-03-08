@@ -9,6 +9,7 @@ import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 
+
 /**
  * Base
  */
@@ -17,6 +18,7 @@ const debugObject = {}
 const gui = new GUI({
     width: 400
 })
+
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -59,9 +61,13 @@ const MonitorTexture = textureLoader.load('/textures/monitor.jpg')
 MonitorTexture.flipY = false
 MonitorTexture.colorSpace = THREE.SRGBColorSpace
 
-const FloorTexture = textureLoader.load('/textures/floor.jpg')
-FloorTexture.flipY = false
-FloorTexture.colorSpace = THREE.SRGBColorSpace
+const TopFloorTexture = textureLoader.load('/textures/topfloor.jpg')
+TopFloorTexture.flipY = false
+TopFloorTexture.colorSpace = THREE.SRGBColorSpace
+
+const BottomFloorTexture = textureLoader.load('/textures/bottomfloor.jpg')
+BottomFloorTexture.flipY = false
+BottomFloorTexture.colorSpace = THREE.SRGBColorSpace
 
 const WallTexture = textureLoader.load('/textures/walls.jpg')
 WallTexture.flipY = false
@@ -118,45 +124,80 @@ Book3Texture.colorSpace = THREE.SRGBColorSpace
 const PlantTexture = textureLoader.load('/textures/plant.jpg')
 PlantTexture.flipY = false
 PlantTexture.colorSpace = THREE.SRGBColorSpace
+
+const CVTexture  = textureLoader.load('/textures/cv.jpg')
+CVTexture.flipY = false
+CVTexture.colorSpace = THREE.SRGBColorSpace
+
+const ChairTexture  = textureLoader.load('/textures/chair.jpg')
+ChairTexture.flipY = false
+ChairTexture.colorSpace = THREE.SRGBColorSpace
+
+
+const DeskOjectsTexture  = textureLoader.load('/textures/deskobjects.jpg')
+DeskOjectsTexture.flipY = false
+DeskOjectsTexture.colorSpace = THREE.SRGBColorSpace
+
 /**
  * Materials
  */
 // Baked material
-const BlackPiecesMaterial = new THREE.MeshBasicMaterial({ map: BlackPiecesTexture })
-const ChessboardMaterial = new THREE.MeshBasicMaterial({ map: Chessboard })
-const WhitePiecesMaterial = new THREE.MeshBasicMaterial({ map: WhitePiecesTexture })
-const MonitorMaterial = new THREE.MeshBasicMaterial({ map: MonitorTexture })
-const FloorMaterial = new THREE.MeshBasicMaterial({ map: FloorTexture })
-const WallMaterial = new THREE.MeshBasicMaterial({ map: WallTexture })
-const PosterMaterial = new THREE.MeshBasicMaterial({ map: PosterTexture })
-const DeskMaterial = new THREE.MeshBasicMaterial({ map: DeskTexture })
-const EtagereMaterial = new THREE.MeshBasicMaterial({ map: EtagereTexture })
-const GithubMaterial = new THREE.MeshBasicMaterial({ map: GithubTexture })
-const KeyboardMaterial = new THREE.MeshBasicMaterial({ map: KeyboardTexture })
-const WindowMaterial = new THREE.MeshBasicMaterial({ map: WindowTexture })
-const DiceMaterial = new THREE.MeshBasicMaterial({ map: DiceTexture })
-const CubeMaterial = new THREE.MeshBasicMaterial({ map: CubeTexture })
-const Book1Material = new THREE.MeshBasicMaterial({ map: Book1Texture })
-const Book2Material = new THREE.MeshBasicMaterial({ map: Book2Texture })
-const PlantMaterial = new THREE.MeshBasicMaterial({ map: PlantTexture })
-const Book3Material = new THREE.MeshBasicMaterial({ map: Book3Texture })
-const LinkedinMaterial = new THREE.MeshBasicMaterial({ map: LinkedinTexture })
+const BlackPiecesMaterial = new THREE.MeshLambertMaterial({ map: BlackPiecesTexture })
+const ChessboardMaterial = new THREE.MeshLambertMaterial({ map: Chessboard })
+const WhitePiecesMaterial = new THREE.MeshLambertMaterial({ map: WhitePiecesTexture })
+const MonitorMaterial = new THREE.MeshLambertMaterial({ map: MonitorTexture })
+const TopFloorMaterial = new THREE.MeshLambertMaterial({ map: TopFloorTexture })
+const WallMaterial = new THREE.MeshLambertMaterial({ map: WallTexture })
+const PosterMaterial = new THREE.MeshLambertMaterial({ map: PosterTexture })
+const DeskMaterial = new THREE.MeshLambertMaterial({ map: DeskTexture })
+const EtagereMaterial = new THREE.MeshLambertMaterial({ map: EtagereTexture })
+const GithubMaterial = new THREE.MeshLambertMaterial({ map: GithubTexture })
+const KeyboardMaterial = new THREE.MeshLambertMaterial({ map: KeyboardTexture })
+const WindowMaterial = new THREE.MeshLambertMaterial({ map: WindowTexture })
+const DiceMaterial = new THREE.MeshLambertMaterial({ map: DiceTexture })
+const CubeMaterial = new THREE.MeshLambertMaterial({ map: CubeTexture })
+const Book1Material = new THREE.MeshLambertMaterial({ map: Book1Texture })
+const Book2Material = new THREE.MeshLambertMaterial({ map: Book2Texture })
+const PlantMaterial = new THREE.MeshLambertMaterial({ map: PlantTexture })
+const Book3Material = new THREE.MeshLambertMaterial({ map: Book3Texture })
+const LinkedinMaterial = new THREE.MeshLambertMaterial({ map: LinkedinTexture })
+const CVMaterial = new THREE.MeshLambertMaterial({ map: CVTexture })
+const ChairMaterial = new THREE.MeshLambertMaterial({ map: ChairTexture })
+const BottomFloorMaterial = new THREE.MeshLambertMaterial({ map: BottomFloorTexture })
+const DeskOjectsMaterial = new THREE.MeshLambertMaterial({ map: DeskOjectsTexture })
 
 
 
-// Pole light material
-
-// Portal light material
 
  
 /**
  * Raycaster
  */
+
 const raycaster = new THREE.Raycaster()
 let currentIntersect = null
 const rayOrigin = new THREE.Vector3(- 3, 0, 0)
 const rayDirection = new THREE.Vector3(10, 0, 0)
 rayDirection.normalize()
+let clickedCV = null;
+let _wrapper = null;
+
+const _CVLastTransform = {
+    position: new THREE.Vector3(),
+    rotation: new THREE.Quaternion()
+};
+
+const moveCVToFront = (_wrapper) => {
+    // Calculate the new position for the CV object
+    const direction = new THREE.Vector3();
+    let _CVLastPosition = new THREE.Vector3(); 
+    
+    _CVLastPosition.copy(_wrapper.position);
+    const globalPosition = _wrapper.getWorldPosition(new THREE.Vector3());
+    _CVLastTransform.position.copy(globalPosition);
+    _CVLastTransform.rotation.copy(_wrapper.rotation);
+
+};
 
 /**
  * Model
@@ -169,11 +210,24 @@ gltfLoader.load(
 
         // Iterate through the children of the loaded GLTF scene to find and apply the texture to chessboard meshes
         gltf.scene.traverse((child) => {
+            // Define a variable to hold the clicked CV object
+
+// Function to move the CV object to a position in front of the camera
+
+
+            if (child.isMesh && child.name === "CV") {
+                child.material = CVMaterial;
+
+                child.userData.onClick = () => {
+                    console.log("XDxxxxxxxxx")
+                };
+            }           
             if (child.isMesh && child.name.startsWith("BChessboard")) {
                 child.material = BlackPiecesMaterial;
             }
             if (child.isMesh && child.name.startsWith("Chessboard")) {
                 child.material = ChessboardMaterial;
+                console.log(ChessboardMaterial)
             }
             if (child.isMesh && child.name.startsWith("WChessboard")) {
                 child.material = WhitePiecesMaterial;
@@ -181,8 +235,8 @@ gltfLoader.load(
             if (child.isMesh && child.name.startsWith("Monitor")) {
                 child.material = MonitorMaterial;
             }
-            if (child.isMesh && child.name.startsWith("Floor")) {
-                child.material = FloorMaterial;
+            if (child.isMesh && child.name.startsWith("TopFloor")) {
+                child.material = TopFloorMaterial;
             }
             if (child.isMesh && child.name.startsWith("Wall")) {
                 child.material = WallMaterial;
@@ -226,7 +280,15 @@ gltfLoader.load(
             if (child.isMesh && child.name.startsWith("linkedin")) {
                 child.material = LinkedinMaterial;
             }
-
+            if (child.isMesh && child.name.startsWith("chair")) {
+                child.material = ChairMaterial;
+            }
+            if (child.isMesh && child.name.startsWith("BottomFloor")) {
+                child.material = BottomFloorMaterial;
+            }
+            if (child.isMesh && child.name.startsWith("deskobj")) {
+                child.material = DeskOjectsMaterial;
+            }
             
             //console.log(child.name)
         });
@@ -245,32 +307,46 @@ const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
 }
+canvas.addEventListener('click', (event) => {
+    event.preventDefault();
 
-window.addEventListener('resize', () =>
-{
-    // Update sizes
-    sizes.width = window.innerWidth
-    sizes.height = window.innerHeight
+    // Calculate mouse coordinates in normalized device coordinates (NDC)
+    const mouse = new THREE.Vector2();
+    mouse.x = (event.clientX / sizes.width) * 2 - 1;
+    mouse.y = -(event.clientY / sizes.height) * 2 + 1;
 
-    // Update camera
-    camera.aspect = sizes.width / sizes.height
-    camera.updateProjectionMatrix()
+    // Raycasting from camera to mouse position
+    raycaster.setFromCamera(mouse, camera);
 
-    // Update renderer
-    renderer.setSize(sizes.width, sizes.height)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    // Check for intersections
+    const intersects = raycaster.intersectObjects(scene.children, true);
 
-    //Update fireflies
-})
-const axesHelper = new THREE.AxesHelper( 5 );
-axesHelper.position.y = 1
-scene.add( axesHelper );
+    if (intersects.length > 0) {
+        const intersect = intersects[0];
+
+        // Check if the intersected object is the CV
+        if (intersect.object.name === "CV") {
+            // Set clickedCV to the intersected object
+            clickedCV = intersect.object;
+
+            // Pass the intersected object to moveCVToFront function
+            moveCVToFront(clickedCV);
+            console.log("XD")
+        }
+    }
+});
+
+
+
+// const axesHelper = new THREE.AxesHelper( 5 );
+// axesHelper.position.y = 1
+// scene.add( axesHelper );
 /**
  * Camera
  */
 // Base camera
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 1, 1000 );
-    camera.position.set(10, 10, 12.5); 
+    camera.position.set(7.63, 6.88, 8.3); 
     scene.add(camera)
     
 
@@ -278,7 +354,7 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeigh
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
-controls.target.set(0, 2.5, 0);
+
 /**
  * Renderer
  */
@@ -287,7 +363,7 @@ const renderer = new THREE.WebGLRenderer({
     antialias: true,
 })
 renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.setPixelRatio(window.devicePixelRatio * 2)
 
 debugObject.clearColor = '#201919'
 renderer.setClearColor(debugObject.clearColor)
@@ -311,8 +387,27 @@ outlinePass.edgeStrength = 10; // Adjust the strength of the outline
 composer.addPass(outlinePass);
 const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);  
 composer.addPass(gammaCorrectionPass);
+// Window resize event listener
+window.addEventListener('resize', () => {
+    // Update sizes
+    sizes.width = window.innerWidth;
+    sizes.height = window.innerHeight;
 
+    // Update camera
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
 
+    // Update renderer
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Update composer
+    composer.setSize(sizes.width, sizes.height);
+});
+// light 
+scene.add(new THREE.AmbientLight(0xffffff, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 /**
  * Animate
  */
@@ -323,7 +418,7 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
     //update fireflies
-   
+    console.log(camera.position)
 
     // Update controls
     controls.update()

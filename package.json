@@ -8,10 +8,14 @@
     "build": "vite build"
   },
   "devDependencies": {
-    "vite": "^4.5.0",
-    "vite-plugin-glsl": "^1.1.2"
+    "eslint": "^8.57.0",
+    "vite": "^3.0.9",
+    "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-glsl": "^1.1.2",
+    "vite-plugin-pdf": "^0.1.0"
   },
   "dependencies": {
+    "@tweenjs/tween.js": "^23.1.1",
     "lil-gui": "^0.19.0",
     "pdfjs-dist": "^4.0.379",
     "three": "^0.158.0"
