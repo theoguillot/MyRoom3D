@@ -227,7 +227,6 @@ gltfLoader.load(
             }
             if (child.isMesh && child.name.startsWith("Chessboard")) {
                 child.material = ChessboardMaterial;
-                console.log(ChessboardMaterial)
             }
             if (child.isMesh && child.name.startsWith("WChessboard")) {
                 child.material = WhitePiecesMaterial;
@@ -418,7 +417,6 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
     //update fireflies
-    console.log(camera.position)
 
     // Update controls
     controls.update()
