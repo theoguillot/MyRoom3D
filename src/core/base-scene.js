@@ -125,7 +125,7 @@ const PlantTexture = textureLoader.load('/textures/plant.jpg')
 PlantTexture.flipY = false
 PlantTexture.colorSpace = THREE.SRGBColorSpace
 
-const CVTexture  = textureLoader.load('/textures/cv.jpg')
+const CVTexture  = textureLoader.load('/textures/CV.jpg')
 CVTexture.flipY = false
 CVTexture.colorSpace = THREE.SRGBColorSpace
 
