@@ -205,96 +205,75 @@ const moveCVToFront = (_wrapper) => {
 gltfLoader.load(
     '/models/portal.glb',
     (gltf) => {
-        // Material for outlining the object
-        //const outlineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-        // Iterate through the children of the loaded GLTF scene to find and apply the texture to chessboard meshes
-        gltf.scene.traverse((child) => {
-            // Define a variable to hold the clicked CV object
+        const bakedWalls = gltf.scene.children.find(child => child.name.startsWith('Wall'))
+        bakedWalls.material = WallMaterial
 
-// Function to move the CV object to a position in front of the camera
+        const bakedbook1 = gltf.scene.children.find(child => child.name.startsWith('book1'))
+        bakedbook1.material = Book1Material
 
+        const bakedbook2 = gltf.scene.children.find(child => child.name.startsWith('book2'))
+        bakedbook2.material = Book2Material
 
-            if (child.isMesh && child.name === "CV") {
-                child.material = CVMaterial;
+        const bakedbook3 = gltf.scene.children.find(child => child.name.startsWith('book3'))
+        bakedbook3.material = Book3Material
 
-                child.userData.onClick = () => {
-                    console.log("XDxxxxxxxxx")
-                };
-            }           
-            if (child.isMesh && child.name.startsWith("BChessboard")) {
-                child.material = BlackPiecesMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("Chessboard")) {
-                child.material = ChessboardMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("WChessboard")) {
-                child.material = WhitePiecesMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("Monitor")) {
-                child.material = MonitorMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("TopFloor")) {
-                child.material = TopFloorMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("Wall")) {
-                child.material = WallMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("poster")) {
-                child.material = PosterMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("desk")) {
-                child.material = DeskMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("Etagere")) {
-                child.material = EtagereMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("Github")) {
-                child.material = GithubMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("Keyboard")) {
-                child.material = KeyboardMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("Window")) {
-                child.material = WindowMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("Dice")) {
-                child.material = DiceMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("Cube")) {
-                child.material = CubeMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("book1")) {
-                child.material = Book1Material;
-            }
-            if (child.isMesh && child.name.startsWith("book2")) {
-                child.material = Book2Material;
-            }
-            if (child.isMesh && child.name.startsWith("book3")) {
-                child.material = Book3Material;
-            }
-            if (child.isMesh && child.name.startsWith("plant")) {
-                child.material = PlantMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("linkedin")) {
-                child.material = LinkedinMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("chair")) {
-                child.material = ChairMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("BottomFloor")) {
-                child.material = BottomFloorMaterial;
-            }
-            if (child.isMesh && child.name.startsWith("deskobj")) {
-                child.material = DeskOjectsMaterial;
-            }
-            
-            //console.log(child.name)
-        });
+        const bakedChessboard = gltf.scene.children.find(child => child.name.startsWith('Chessboard'))
+        bakedChessboard.material = ChessboardMaterial
+
+        const bakedBChessboard = gltf.scene.children.find(child => child.name.startsWith('BChessboard'))
+        bakedBChessboard.material = BlackPiecesMaterial
+
+        const bakedWChessboard = gltf.scene.children.find(child => child.name.startsWith('WChessboard'))
+        bakedWChessboard.material = WhitePiecesMaterial
+
+        const bakedTopFloor = gltf.scene.children.find(child => child.name.startsWith('TopFloor'))
+        bakedTopFloor.material = TopFloorMaterial
+
+        const bakedPoster = gltf.scene.children.find(child => child.name.startsWith('poster'))
+        bakedPoster.material = PosterMaterial
+
+        const bakedDesk = gltf.scene.children.find(child => child.name.startsWith('desk-merged'))
+        bakedDesk.material = DeskMaterial
+
+        const bakedEtagere = gltf.scene.children.find(child => child.name.startsWith('Etagere'))
+        bakedEtagere.material = EtagereMaterial
+
+        const bakedGithub = gltf.scene.children.find(child => child.name.startsWith('Github'))
+        bakedGithub.material = GithubMaterial
+
+        const bakedLinkedin = gltf.scene.children.find(child => child.name.startsWith('linkedin'))
+        bakedLinkedin.material = LinkedinMaterial
+
+        const CV = gltf.scene.children.find(child => child.name.startsWith('CV'))
+        CV.material = CVMaterial
+
+        const bakeddeskObjects = gltf.scene.children.find(child => child.name.startsWith('deskobj'))
+        bakeddeskObjects.material = DeskOjectsMaterial
+
+        const bakedWindow = gltf.scene.children.find(child => child.name.startsWith('Window'))
+        bakedWindow.material = WindowMaterial
+
+        const bakedDice = gltf.scene.children.find(child => child.name.startsWith('Dice'))
+        bakedDice.material = DiceMaterial
+
+        const bakedCube = gltf.scene.children.find(child => child.name.startsWith('Cube'))
+        bakedCube.material = CubeMaterial
+
+        const bakedPlant = gltf.scene.children.find(child => child.name.startsWith('plant'))
+        bakedPlant.material = PlantMaterial
+
+        const bakedChair = gltf.scene.children.find(child => child.name.startsWith('chair'))
+        bakedChair.material = ChairMaterial
+        
+        const bakedBottomFloor = gltf.scene.children.find(child => child.name.startsWith('BottomFloor'))
+        bakedBottomFloor.material = BottomFloorMaterial
+
+        const bakedKeyBoard = gltf.scene.children.find(child => child.name.startsWith('Keyboard'))
+        bakedKeyBoard.material = KeyboardMaterial
+              
 
         scene.add(gltf.scene);
-
-        // Add outline pass to the composer
     }
 );
 
@@ -359,7 +338,6 @@ controls.enableDamping = true
  */
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
-    antialias: true,
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(window.devicePixelRatio * 2)
@@ -371,8 +349,19 @@ gui.onChange(()=>
 {
     renderer.setClearColor(debugObject.clearColor)
 })
+// Render Target
+const renderTarget = new THREE.WebGLRenderTarget(
+    800, 
+    600,
+    {
+        samples: 5
+    }
+    )
+//Effect composer
+const composer = new EffectComposer(renderer, renderTarget);
+composer.setSize(sizes.width, sizes.height)
+composer.setPixelRatio(2)
 
-const composer = new EffectComposer(renderer);
 
 const renderPass = new RenderPass(scene, camera);
 composer.addPass(renderPass);
