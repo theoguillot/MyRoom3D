@@ -8,7 +8,7 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-
+import { ColladaLoader } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/ColladaLoader.js';
 
 /**
  * Base
@@ -29,18 +29,30 @@ const scene = new THREE.Scene()
 /**
  * Loaders
  */
+const loadingManager = new THREE.LoadingManager();
+
+const progressBar = document.getElementById('progress-bar');
+console.log(progressBar)
+
+loadingManager.onProgress = function(url, loaded, total){
+    progressBar.value = (loaded/total) * 100;
+}
+
+const progressBarContainer = document.querySelector('.progress-bar-container');
+loadingManager.onLoad = function(){
+    progressBarContainer.style.display = 'none';
+}
 // Texture loader
-const textureLoader = new THREE.TextureLoader()
+const textureLoader = new THREE.TextureLoader(loadingManager)
+
 
 // Draco loader
 const dracoLoader = new DRACOLoader()
 dracoLoader.setDecoderPath('draco/')
 
 // GLTF loader
-const gltfLoader = new GLTFLoader()
+const gltfLoader = new GLTFLoader(loadingManager)
 gltfLoader.setDRACOLoader(dracoLoader)
-
-
 
 /*
  * Textures
@@ -273,9 +285,12 @@ gltfLoader.load(
         bakedKeyBoard.material = KeyboardMaterial
               
 
-        scene.add(gltf.scene);
+    scene.add(gltf.scene);
+        
     }
+
 );
+
 
 
 /**

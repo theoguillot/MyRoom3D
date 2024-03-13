@@ -7,8 +7,15 @@
     <link rel="stylesheet" href="./core/style.css">
 </head>
 <body>
+
     <canvas class="webgl"></canvas>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> <!-- Include Three.js library -->
+    <div class="progress-bar-container">
+
+        <label for = "progress-bar">Loading...</label>
+        <progress id = "progress-bar" value="0" max="100"></progress>
+    </div>
     <script type="module" src="./core/base-scene.js"></script>
 </body>
 </html>
