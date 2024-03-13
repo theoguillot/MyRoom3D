@@ -8,7 +8,7 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-import { ColladaLoader } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/ColladaLoader.js';
+import gsap from 'gsap';
 
 /**
  * Base
@@ -263,6 +263,9 @@ gltfLoader.load(
         const bakeddeskObjects = gltf.scene.children.find(child => child.name.startsWith('deskobj'))
         bakeddeskObjects.material = DeskOjectsMaterial
 
+        const bakeddeskObjectsMonitor = gltf.scene.children.find(child => child.name.startsWith('deskobj-monitor'))
+        bakeddeskObjectsMonitor.material = DeskOjectsMaterial
+
         const bakedWindow = gltf.scene.children.find(child => child.name.startsWith('Window'))
         bakedWindow.material = WindowMaterial
 
@@ -300,6 +303,7 @@ const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
 }
+const zoomTargetPosition = new THREE.Vector3(1.40, 2.20, 1.57); 
 canvas.addEventListener('click', (event) => {
     event.preventDefault();
 
@@ -324,17 +328,14 @@ canvas.addEventListener('click', (event) => {
         } else if (intersect.object.name === "linkedin-merged") {
             // Open LinkedIn link
             window.open("https://www.linkedin.com/in/tguillotdev/");
-        } else if (intersect.object.name === "CV") {
-            // Set clickedCV to the intersected object
-            clickedCV = intersect.object;
-
-            // Pass the intersected object to moveCVToFront function
-            moveCVToFront(clickedCV);
+        } else if (intersect.object.name === "deskobj-monitor-merged") {
+            gsap.to(camera.position, { duration: 2, x: zoomTargetPosition.x, y:zoomTargetPosition.y, z: zoomTargetPosition.z });
+            controls.target = new THREE.Vector3(intersect.object.position.x, intersect.object.position.y + 0.2,  intersect.object.position.z); 
         }
     }
 });
 
-let isOverGithubOrLinkedin = false;
+let isOverObject = false;
 
 canvas.addEventListener('mousemove', (event) => {
     event.preventDefault();
@@ -354,7 +355,7 @@ canvas.addEventListener('mousemove', (event) => {
         const intersect = intersects[0];
 
         // Check if the intersected object is the GitHub object or LinkedIn object
-        if (intersect.object.name === "Github-merged" || intersect.object.name === "linkedin-merged") {
+        if (intersect.object.name === "Github-merged" || intersect.object.name === "linkedin-merged" || intersect.object.name === "deskobj-monitor-merged") {
             // Apply the outline effect
             outlinePass.selectedObjects = [intersect.object];
 
@@ -362,22 +363,22 @@ canvas.addEventListener('mousemove', (event) => {
             canvas.style.cursor = 'pointer';
 
             // Set the flag to indicate that the mouse is over GitHub or LinkedIn
-            isOverGithubOrLinkedin = true;
+            isOverObject = true;
         } else {
             // If not intersecting with the GitHub or LinkedIn object, remove outline effect
             outlinePass.selectedObjects = [];
 
             // Reset cursor style only if the mouse was previously over GitHub or LinkedIn
-            if (isOverGithubOrLinkedin) {
+            if (isOverObject) {
                 canvas.style.cursor = 'auto';
-                isOverGithubOrLinkedin = false;
+                isOverObject = false;
             }
         }
     } else {
         // If no intersections, remove outline effect and reset cursor style
         outlinePass.selectedObjects = [];
         canvas.style.cursor = 'auto';
-        isOverGithubOrLinkedin = false;
+        isOverObject = false;
     }
 });
 
@@ -484,6 +485,7 @@ const tick = () =>
     renderer.render(scene, camera)
     // Update composer
     composer.render();
+    //console.log(camera.position)
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
