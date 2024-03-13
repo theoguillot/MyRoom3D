@@ -317,17 +317,72 @@ canvas.addEventListener('click', (event) => {
     if (intersects.length > 0) {
         const intersect = intersects[0];
 
-        // Check if the intersected object is the CV
-        if (intersect.object.name === "CV") {
+        // Check if the intersected object is the GitHub object or LinkedIn object
+        if (intersect.object.name === "Github-merged") {
+            // Open GitHub link
+            window.open("https://github.com/theoguillot/");
+        } else if (intersect.object.name === "linkedin-merged") {
+            // Open LinkedIn link
+            window.open("https://www.linkedin.com/in/tguillotdev/");
+        } else if (intersect.object.name === "CV") {
             // Set clickedCV to the intersected object
             clickedCV = intersect.object;
 
             // Pass the intersected object to moveCVToFront function
             moveCVToFront(clickedCV);
-            console.log("XD")
         }
     }
 });
+
+let isOverGithubOrLinkedin = false;
+
+canvas.addEventListener('mousemove', (event) => {
+    event.preventDefault();
+
+    // Calculate mouse coordinates in normalized device coordinates (NDC)
+    const mouse = new THREE.Vector2();
+    mouse.x = (event.clientX / sizes.width) * 2 - 1;
+    mouse.y = -(event.clientY / sizes.height) * 2 + 1;
+
+    // Raycasting from camera to mouse position
+    raycaster.setFromCamera(mouse, camera);
+
+    // Check for intersections
+    const intersects = raycaster.intersectObjects(scene.children, true);
+
+    if (intersects.length > 0) {
+        const intersect = intersects[0];
+
+        // Check if the intersected object is the GitHub object or LinkedIn object
+        if (intersect.object.name === "Github-merged" || intersect.object.name === "linkedin-merged") {
+            // Apply the outline effect
+            outlinePass.selectedObjects = [intersect.object];
+
+            // Change cursor style to hand with one finger up
+            canvas.style.cursor = 'pointer';
+
+            // Set the flag to indicate that the mouse is over GitHub or LinkedIn
+            isOverGithubOrLinkedin = true;
+        } else {
+            // If not intersecting with the GitHub or LinkedIn object, remove outline effect
+            outlinePass.selectedObjects = [];
+
+            // Reset cursor style only if the mouse was previously over GitHub or LinkedIn
+            if (isOverGithubOrLinkedin) {
+                canvas.style.cursor = 'auto';
+                isOverGithubOrLinkedin = false;
+            }
+        }
+    } else {
+        // If no intersections, remove outline effect and reset cursor style
+        outlinePass.selectedObjects = [];
+        canvas.style.cursor = 'auto';
+        isOverGithubOrLinkedin = false;
+    }
+});
+
+
+
 
 
 
