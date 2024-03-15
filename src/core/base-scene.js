@@ -321,11 +321,32 @@ function createScreen(imageUrl, position, rotation) {
    
     return Screenplane;
 }
+// Function to create a close icon circle
+function createCloseIcon(position, rotation, alpha) {
+    const circleGeometry = new THREE.CircleGeometry(0.03, 32);
+    const texture = new THREE.TextureLoader().load('/textures/close-icon.png');
+    const material = new THREE.MeshBasicMaterial({ map: texture });
+    const closeIcon = new THREE.Mesh(circleGeometry, material);
+    closeIcon.position.copy(position);
+    closeIcon.rotation.copy(rotation);
+    scene.add(closeIcon);
+
+    return closeIcon;
+}
+const closeIconPosition = new THREE.Vector3(-0.195, 2.65, 1.55);
+const closeIconRotation = new THREE.Euler(0, Math.PI / 2, 0); 
+
+
+
 const cvPosition = new THREE.Vector3(-0.19, 2.28, 1.85);
+const cvRotation = new THREE.Euler(0, Math.PI / 2, 0); 
+
 const screenPosition = new THREE.Vector3(-0.195, 2.13, 1.55);
-const project1Rotation = new THREE.Euler(0, Math.PI / 2, 0); // Rotate 90 degrees around X-axis
-const cvplane = createProjectPlane('/textures/cv-icon.jpg', cvPosition, project1Rotation);
-const Screenplane = createScreen('/textures/homescreen.JPG', screenPosition, project1Rotation);
+const screenRotation = new THREE.Euler(0, Math.PI / 2, 0); 
+
+const closeIcon = createCloseIcon(closeIconPosition, closeIconRotation);
+const cvplane = createProjectPlane('/textures/cv-icon.jpg', cvPosition, cvRotation);
+const Screenplane = createScreen('/textures/homescreen.JPG', screenPosition, screenRotation);
 
 /**
  * Sizes
@@ -335,7 +356,7 @@ const sizes = {
     height: window.innerHeight
 }
 
-const zoomTargetPosition = new THREE.Vector3(1.40, 2.20, 1.57); 
+const zoomTargetPosition = new THREE.Vector3(1.40, 2.30, 1.57); 
 let isZoomedIn = false;
 
 // Add a click event listener to the canvas
@@ -369,18 +390,26 @@ canvas.addEventListener('click', (event) => {
                 // Open cv link
                 console.log("yo")
                 window.open("https://theo-guillot-cv.tiiny.site/");
+
             } else if (intersect.object.name === "deskobj-monitor" || intersect.object === Screenplane  ) {
-                controls.target = new THREE.Vector3(intersect.object.position.x, intersect.object.position.y ,  intersect.object.position.z); 
+
+                controls.target = new THREE.Vector3(Screenplane.position.x, Screenplane.position.y ,  Screenplane.position.z); 
                 if (isZoomedIn == false) {
-                    gsap.to(camera.position, { duration: 2, x: zoomTargetPosition.x, y: zoomTargetPosition.y + 0.1, z: zoomTargetPosition.z });
+                    gsap.to(camera.position, { duration: 2, x: zoomTargetPosition.x, y: zoomTargetPosition.y, z: zoomTargetPosition.z });
                     isZoomedIn = true; // Set the flag to indicate that the camera is zoomed in
                     controls.enableZoom = false;
                 }
+            } else if (intersect.object ===  closeIcon ) {
+                isZoomedIn = false;
+                gsap.to(camera.position, { duration: 2, x: baseCoordinates.x, y: baseCoordinates.y, z: baseCoordinates.z});
+                gsap.to(controls.target, { duration: 2, x: 0, y: 0, z: 0 });
+                controls.enableZoom = true;
+                
             }
+    
         }
     
 });
-
 
 
 let isOverObject = false;
@@ -398,7 +427,7 @@ canvas.addEventListener('mousemove', (event) => {
 
     // Check for intersections
     const intersects = raycaster.intersectObjects(scene.children, true);
-
+    
     // Flag to track if the cursor is over the CV icon
     let isOverCV = false;
 
@@ -406,7 +435,7 @@ canvas.addEventListener('mousemove', (event) => {
         const intersect = intersects[0];
 
         // Check if the intersected object is the CV icon
-        if ( isZoomedIn === true && intersect.object === cvplane) {
+        if (isZoomedIn && intersect.object === cvplane) {
             // Apply the outline effect for CV icon
             cvoutlinePass.selectedObjects = [intersect.object];
             isOverCV = true; // Set flag to true
@@ -415,14 +444,15 @@ canvas.addEventListener('mousemove', (event) => {
             cvoutlinePass.selectedObjects = [];
         }
 
-        // Check if the intersected object is the GitHub object or LinkedIn object
+        // Check if the intersected object is the GitHub object, LinkedIn object, or screen
         if (
             intersect.object.name === "Github-merged" || 
             intersect.object.name === "linkedin-merged" || 
             intersect.object.name === "deskobj-monitor" ||
-            intersect.object === Screenplane
-            ) {
-            // Apply the outline effect for GitHub or LinkedIn
+            intersect.object === Screenplane ||
+            intersect.object === closeIcon
+        ) {
+            // Apply the outline effect for GitHub, LinkedIn, or screen
             outlinePass.selectedObjects = [intersect.object];
 
             // Change cursor style to hand with one finger up
@@ -436,13 +466,22 @@ canvas.addEventListener('mousemove', (event) => {
                 canvas.style.cursor = 'auto';
             }
         }
+
+        // Check if isZoomedIn is true to show the close icon
+        if (isZoomedIn) {
+            closeIcon.visible = true;
+        } else {
+            closeIcon.visible = false;
+        }
     } else {
         // If no intersections, remove outline effects and reset cursor style
         outlinePass.selectedObjects = [];
         cvoutlinePass.selectedObjects = [];
         canvas.style.cursor = 'auto';
+        closeIcon.visible = false; // Hide close icon when no intersections
     }
 });
+
 
 
 
@@ -453,8 +492,9 @@ canvas.addEventListener('mousemove', (event) => {
  * Camera
  */
 // Base camera
+const baseCoordinates = new THREE.Vector3(6.52, 6.02, 8.45)
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 1, 1000 );
-    camera.position.set(7.63, 6.88, 8.3); 
+    camera.position.set(baseCoordinates.x, baseCoordinates.y, baseCoordinates.z); 
     scene.add(camera)
     
 
@@ -552,7 +592,6 @@ const tick = () =>
     // Update composer
     composer.render();
     //console.log(camera.position)
-
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
 }
