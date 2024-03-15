@@ -325,7 +325,7 @@ const project1Position = new THREE.Vector3(-0.19, 2.23, 1.8);
 const screenPosition = new THREE.Vector3(-0.195, 2.13, 1.55);
 const project1Rotation = new THREE.Euler(0, Math.PI / 2, 0); // Rotate 90 degrees around X-axis
 createProjectPlane('/textures/cv-icon.jpg', project1Position, project1Rotation);
-const Screenplane = createScreen('/textures/homescreen.jpg', screenPosition, project1Rotation);
+const Screenplane = createScreen('/textures/homescreen.JPG', screenPosition, project1Rotation);
 
 /**
  * Sizes
