@@ -299,7 +299,7 @@ gltfLoader.load(
 );
 // Function to create a plane with an icon and rotate it
 function createProjectPlane(imageUrl, position, rotation) {
-    const planeGeometry = new THREE.PlaneGeometry(0.125, 0.125);
+    const planeGeometry = new THREE.PlaneGeometry(0.1, 0.1);
     const texture = new THREE.TextureLoader().load(imageUrl);
     const material = new THREE.MeshBasicMaterial({ map: texture });
     const plane = new THREE.Mesh(planeGeometry, material);
@@ -321,10 +321,10 @@ function createScreen(imageUrl, position, rotation) {
    
     return Screenplane;
 }
-const project1Position = new THREE.Vector3(-0.19, 2.23, 1.8);
+const cvPosition = new THREE.Vector3(-0.19, 2.28, 1.85);
 const screenPosition = new THREE.Vector3(-0.195, 2.13, 1.55);
 const project1Rotation = new THREE.Euler(0, Math.PI / 2, 0); // Rotate 90 degrees around X-axis
-createProjectPlane('/textures/cv-icon.jpg', project1Position, project1Rotation);
+const cvplane = createProjectPlane('/textures/cv-icon.jpg', cvPosition, project1Rotation);
 const Screenplane = createScreen('/textures/homescreen.JPG', screenPosition, project1Rotation);
 
 /**
@@ -343,7 +343,7 @@ canvas.addEventListener('click', (event) => {
     event.preventDefault();
 
     // Check if the camera is zoomed in
-    if (!isZoomedIn) {
+ 
         // Calculate mouse coordinates in normalized device coordinates (NDC)
         const mouse = new THREE.Vector2();
         mouse.x = (event.clientX / sizes.width) * 2 - 1;
@@ -365,16 +365,20 @@ canvas.addEventListener('click', (event) => {
             } else if (intersect.object.name === "linkedin-merged") {
                 // Open LinkedIn link
                 window.open("https://www.linkedin.com/in/tguillotdev/");
+            }else if (intersect.object ===  cvplane ) {
+                // Open cv link
+                console.log("yo")
+                window.open("https://theo-guillot-cv.tiiny.site/");
             } else if (intersect.object.name === "deskobj-monitor" || intersect.object === Screenplane  ) {
                 controls.target = new THREE.Vector3(intersect.object.position.x, intersect.object.position.y ,  intersect.object.position.z); 
                 if (isZoomedIn == false) {
-                    gsap.to(camera.position, { duration: 2, x: zoomTargetPosition.x, y: zoomTargetPosition.y, z: zoomTargetPosition.z });
+                    gsap.to(camera.position, { duration: 2, x: zoomTargetPosition.x, y: zoomTargetPosition.y + 0.1, z: zoomTargetPosition.z });
                     isZoomedIn = true; // Set the flag to indicate that the camera is zoomed in
                     controls.enableZoom = false;
                 }
             }
         }
-    }
+    
 });
 
 
@@ -395,8 +399,21 @@ canvas.addEventListener('mousemove', (event) => {
     // Check for intersections
     const intersects = raycaster.intersectObjects(scene.children, true);
 
+    // Flag to track if the cursor is over the CV icon
+    let isOverCV = false;
+
     if (intersects.length > 0) {
         const intersect = intersects[0];
+
+        // Check if the intersected object is the CV icon
+        if ( isZoomedIn === true && intersect.object === cvplane) {
+            // Apply the outline effect for CV icon
+            cvoutlinePass.selectedObjects = [intersect.object];
+            isOverCV = true; // Set flag to true
+        } else {
+            // If not intersecting with the CV icon, remove its outline effect
+            cvoutlinePass.selectedObjects = [];
+        }
 
         // Check if the intersected object is the GitHub object or LinkedIn object
         if (
@@ -405,31 +422,28 @@ canvas.addEventListener('mousemove', (event) => {
             intersect.object.name === "deskobj-monitor" ||
             intersect.object === Screenplane
             ) {
-            // Apply the outline effect
+            // Apply the outline effect for GitHub or LinkedIn
             outlinePass.selectedObjects = [intersect.object];
 
             // Change cursor style to hand with one finger up
             canvas.style.cursor = 'pointer';
-
-            // Set the flag to indicate that the mouse is over GitHub or LinkedIn
-            isOverObject = true;
         } else {
-            // If not intersecting with the GitHub or LinkedIn object, remove outline effect
+            // If not intersecting with the GitHub or LinkedIn object, remove their outline effect
             outlinePass.selectedObjects = [];
-
+            
             // Reset cursor style only if the mouse was previously over GitHub or LinkedIn
-            if (isOverObject) {
+            if (!isOverCV) {
                 canvas.style.cursor = 'auto';
-                isOverObject = false;
             }
         }
     } else {
-        // If no intersections, remove outline effect and reset cursor style
+        // If no intersections, remove outline effects and reset cursor style
         outlinePass.selectedObjects = [];
+        cvoutlinePass.selectedObjects = [];
         canvas.style.cursor = 'auto';
-        isOverObject = false;
     }
 });
+
 
 
 // const axesHelper = new THREE.AxesHelper( 5 );
@@ -487,10 +501,17 @@ outlinePass.visibleEdgeColor.set(0xffffff); // Set the color of the outline
 outlinePass.hiddenEdgeColor.set(0xffffff); // Set the color of hidden edges
 outlinePass.edgeThickness = 2; // Adjust the thickness of the outline
 outlinePass.edgeStrength = 10; // Adjust the strength of the outline
-
 composer.addPass(outlinePass);
+const cvoutlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
+cvoutlinePass.visibleEdgeColor.set(0x0000ff); 
+cvoutlinePass.hiddenEdgeColor.set(0xffffff)
+cvoutlinePass.edgeThickness = 2; 
+cvoutlinePass.edgeStrength = 10; 
+composer.addPass(cvoutlinePass);
+
 const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);  
 composer.addPass(gammaCorrectionPass);
+
 // Window resize event listener
 window.addEventListener('resize', () => {
     // Update sizes
