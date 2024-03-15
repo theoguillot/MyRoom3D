@@ -145,11 +145,13 @@ const ChairTexture  = textureLoader.load('/textures/chair.jpg')
 ChairTexture.flipY = false
 ChairTexture.colorSpace = THREE.SRGBColorSpace
 
-
 const DeskOjectsTexture  = textureLoader.load('/textures/deskobjects.jpg')
 DeskOjectsTexture.flipY = false
 DeskOjectsTexture.colorSpace = THREE.SRGBColorSpace
 
+// const MouseTexture  = textureLoader.load('/textures/desk.jpg')
+// MouseTexture.flipY = false
+// MouseTexture.colorSpace = THREE.SRGBColorSpace
 /**
  * Materials
  */
@@ -177,6 +179,7 @@ const CVMaterial = new THREE.MeshLambertMaterial({ map: CVTexture })
 const ChairMaterial = new THREE.MeshLambertMaterial({ map: ChairTexture })
 const BottomFloorMaterial = new THREE.MeshLambertMaterial({ map: BottomFloorTexture })
 const DeskOjectsMaterial = new THREE.MeshLambertMaterial({ map: DeskOjectsTexture })
+// const MouseMaterial = new THREE.MeshLambertMaterial({ map: MouseTexture })
 
 
 
@@ -191,8 +194,6 @@ let currentIntersect = null
 const rayOrigin = new THREE.Vector3(- 3, 0, 0)
 const rayDirection = new THREE.Vector3(10, 0, 0)
 rayDirection.normalize()
-let clickedCV = null;
-let _wrapper = null;
 
 const _CVLastTransform = {
     position: new THREE.Vector3(),
@@ -264,7 +265,7 @@ gltfLoader.load(
         bakeddeskObjects.material = DeskOjectsMaterial
 
         const bakeddeskObjectsMonitor = gltf.scene.children.find(child => child.name.startsWith('deskobj-monitor'))
-        bakeddeskObjectsMonitor.material = DeskOjectsMaterial
+        bakeddeskObjectsMonitor.material = MonitorMaterial
 
         const bakedWindow = gltf.scene.children.find(child => child.name.startsWith('Window'))
         bakedWindow.material = WindowMaterial
@@ -286,15 +287,45 @@ gltfLoader.load(
 
         const bakedKeyBoard = gltf.scene.children.find(child => child.name.startsWith('Keyboard'))
         bakedKeyBoard.material = KeyboardMaterial
-              
+            
+        // const bakedMouse = gltf.scene.children.find(child => child.name.startsWith('Mouse'))
+        // bakedMouse.material = MouseMaterial
+
 
     scene.add(gltf.scene);
         
     }
 
 );
+// Function to create a plane with an icon and rotate it
+function createProjectPlane(imageUrl, position, rotation) {
+    const planeGeometry = new THREE.PlaneGeometry(0.125, 0.125);
+    const texture = new THREE.TextureLoader().load(imageUrl);
+    const material = new THREE.MeshBasicMaterial({ map: texture });
+    const plane = new THREE.Mesh(planeGeometry, material);
+    plane.position.copy(position);
+    plane.rotation.copy(rotation); // Set rotation
+    scene.add(plane);
 
-
+    return plane;
+}
+// Function to create a plane with an icon and rotate it
+function createScreen(imageUrl, position, rotation) {
+    const planeGeometry = new THREE.PlaneGeometry(1.5, 0.88);
+    const texture = new THREE.TextureLoader().load(imageUrl);
+    const material = new THREE.MeshBasicMaterial({ map: texture });
+    const Screenplane = new THREE.Mesh(planeGeometry, material);
+    Screenplane.position.copy(position);
+    Screenplane.rotation.copy(rotation); // Set rotation
+    scene.add(Screenplane);
+   
+    return Screenplane;
+}
+const project1Position = new THREE.Vector3(-0.19, 2.23, 1.8);
+const screenPosition = new THREE.Vector3(-0.195, 2.13, 1.55);
+const project1Rotation = new THREE.Euler(0, Math.PI / 2, 0); // Rotate 90 degrees around X-axis
+createProjectPlane('/textures/cv-icon.jpg', project1Position, project1Rotation);
+const Screenplane = createScreen('/textures/homescreen.jpg', screenPosition, project1Rotation);
 
 /**
  * Sizes
@@ -303,37 +334,50 @@ const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
 }
+
 const zoomTargetPosition = new THREE.Vector3(1.40, 2.20, 1.57); 
+let isZoomedIn = false;
+
+// Add a click event listener to the canvas
 canvas.addEventListener('click', (event) => {
     event.preventDefault();
 
-    // Calculate mouse coordinates in normalized device coordinates (NDC)
-    const mouse = new THREE.Vector2();
-    mouse.x = (event.clientX / sizes.width) * 2 - 1;
-    mouse.y = -(event.clientY / sizes.height) * 2 + 1;
+    // Check if the camera is zoomed in
+    if (!isZoomedIn) {
+        // Calculate mouse coordinates in normalized device coordinates (NDC)
+        const mouse = new THREE.Vector2();
+        mouse.x = (event.clientX / sizes.width) * 2 - 1;
+        mouse.y = -(event.clientY / sizes.height) * 2 + 1;
 
-    // Raycasting from camera to mouse position
-    raycaster.setFromCamera(mouse, camera);
+        // Raycasting from camera to mouse position
+        raycaster.setFromCamera(mouse, camera);
 
-    // Check for intersections
-    const intersects = raycaster.intersectObjects(scene.children, true);
+        // Check for intersections
+        const intersects = raycaster.intersectObjects(scene.children, true);
 
-    if (intersects.length > 0) {
-        const intersect = intersects[0];
+        if (intersects.length > 0 || intersectsscreen.length > 0 ) {
+            const intersect = intersects[0];
 
-        // Check if the intersected object is the GitHub object or LinkedIn object
-        if (intersect.object.name === "Github-merged") {
-            // Open GitHub link
-            window.open("https://github.com/theoguillot/");
-        } else if (intersect.object.name === "linkedin-merged") {
-            // Open LinkedIn link
-            window.open("https://www.linkedin.com/in/tguillotdev/");
-        } else if (intersect.object.name === "deskobj-monitor-merged") {
-            gsap.to(camera.position, { duration: 2, x: zoomTargetPosition.x, y:zoomTargetPosition.y, z: zoomTargetPosition.z });
-            controls.target = new THREE.Vector3(intersect.object.position.x, intersect.object.position.y + 0.2,  intersect.object.position.z); 
+            // Check if the intersected object is the GitHub object or LinkedIn object
+            if (intersect.object.name === "Github-merged") {
+                // Open GitHub link
+                window.open("https://github.com/theoguillot/");
+            } else if (intersect.object.name === "linkedin-merged") {
+                // Open LinkedIn link
+                window.open("https://www.linkedin.com/in/tguillotdev/");
+            } else if (intersect.object.name === "deskobj-monitor" || intersect.object === Screenplane  ) {
+                controls.target = new THREE.Vector3(intersect.object.position.x, intersect.object.position.y ,  intersect.object.position.z); 
+                if (isZoomedIn == false) {
+                    gsap.to(camera.position, { duration: 2, x: zoomTargetPosition.x, y: zoomTargetPosition.y, z: zoomTargetPosition.z });
+                    isZoomedIn = true; // Set the flag to indicate that the camera is zoomed in
+                    controls.enableZoom = false;
+                }
+            }
         }
     }
 });
+
+
 
 let isOverObject = false;
 
@@ -355,7 +399,12 @@ canvas.addEventListener('mousemove', (event) => {
         const intersect = intersects[0];
 
         // Check if the intersected object is the GitHub object or LinkedIn object
-        if (intersect.object.name === "Github-merged" || intersect.object.name === "linkedin-merged" || intersect.object.name === "deskobj-monitor-merged") {
+        if (
+            intersect.object.name === "Github-merged" || 
+            intersect.object.name === "linkedin-merged" || 
+            intersect.object.name === "deskobj-monitor" ||
+            intersect.object === Screenplane
+            ) {
             // Apply the outline effect
             outlinePass.selectedObjects = [intersect.object];
 
@@ -381,10 +430,6 @@ canvas.addEventListener('mousemove', (event) => {
         isOverObject = false;
     }
 });
-
-
-
-
 
 
 // const axesHelper = new THREE.AxesHelper( 5 );
