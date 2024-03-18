@@ -32,7 +32,7 @@ const scene = new THREE.Scene()
 const loadingManager = new THREE.LoadingManager();
 
 const progressBar = document.getElementById('progress-bar');
-console.log(progressBar)
+
 
 loadingManager.onProgress = function(url, loaded, total){
     progressBar.value = (loaded/total) * 100;
@@ -218,7 +218,15 @@ const moveCVToFront = (_wrapper) => {
 gltfLoader.load(
     '/models/portal.glb',
     (gltf) => {
-
+        gltf.scene.traverse((child) => {
+            if (child.isMesh) {
+                if (child.name.startsWith('WChessboard')) {
+                    child.material = WhitePiecesMaterial;
+                } else if (child.name.startsWith('BChessboard')) {
+                    child.material = BlackPiecesMaterial;
+                }
+            }
+        });
         const bakedWalls = gltf.scene.children.find(child => child.name.startsWith('Wall'))
         bakedWalls.material = WallMaterial
 
@@ -233,12 +241,6 @@ gltfLoader.load(
 
         const bakedChessboard = gltf.scene.children.find(child => child.name.startsWith('Chessboard'))
         bakedChessboard.material = ChessboardMaterial
-
-        const bakedBChessboard = gltf.scene.children.find(child => child.name.startsWith('BChessboard'))
-        bakedBChessboard.material = BlackPiecesMaterial
-
-        const bakedWChessboard = gltf.scene.children.find(child => child.name.startsWith('WChessboard'))
-        bakedWChessboard.material = WhitePiecesMaterial
 
         const bakedTopFloor = gltf.scene.children.find(child => child.name.startsWith('TopFloor'))
         bakedTopFloor.material = TopFloorMaterial
@@ -297,6 +299,16 @@ gltfLoader.load(
     }
 
 );
+// Function to create a plane with video texture
+function createVideoTexture(videoUrl) {
+    const video = document.createElement('video');
+    video.src = videoUrl;
+    video.loop = true;
+    video.muted = false; 
+    video.play();
+    const texture = new THREE.VideoTexture(video);
+    return texture;
+}
 // Function to create a plane with an icon and rotate it
 function createProjectPlane(imageUrl, position, rotation) {
     const planeGeometry = new THREE.PlaneGeometry(0.1, 0.1);
@@ -324,7 +336,7 @@ function createScreen(imageUrl, position, rotation) {
 // Function to create a close icon circle
 function createCloseIcon(position, rotation, alpha) {
     const circleGeometry = new THREE.CircleGeometry(0.03, 32);
-    const texture = new THREE.TextureLoader().load('/textures/close-icon.png');
+    const texture = new THREE.TextureLoader().load('/textures/screen/close-icon.png');
     const material = new THREE.MeshBasicMaterial({ map: texture });
     const closeIcon = new THREE.Mesh(circleGeometry, material);
     closeIcon.position.copy(position);
@@ -333,21 +345,52 @@ function createCloseIcon(position, rotation, alpha) {
 
     return closeIcon;
 }
+function createMuteIcon(position, rotation, alpha) {
+    const circleGeometry = new THREE.CircleGeometry(0.03, 32);
+    
+    var muteTexture = textureLoader.load('/textures/screen/sound-on.png');
+    var unmuteTexture = textureLoader.load('/textures/screen/sound-off.png');
+
+    const texture = new THREE.TextureLoader().load('/textures/screen/sound-off.png');
+    const material = new THREE.MeshBasicMaterial({ map: texture });
+    const closeIcon = new THREE.Mesh(circleGeometry, material);
+    closeIcon.position.copy(position);
+    closeIcon.rotation.copy(rotation);
+    scene.add(closeIcon);
+
+    return closeIcon;
+}
+
+
+const closeSoundPosition = new THREE.Vector3(-0.192, 1.8, 0.9);
+const closeSoundRotation = new THREE.Euler(0, Math.PI / 2, 0); 
+
 const closeIconPosition = new THREE.Vector3(-0.195, 2.65, 1.55);
 const closeIconRotation = new THREE.Euler(0, Math.PI / 2, 0); 
 
+const closeVideoPosition = new THREE.Vector3(-0.192, 2.5, 2.2);
+const closeVideoRotation = new THREE.Euler(0, Math.PI / 2, 0); 
 
 
 const cvPosition = new THREE.Vector3(-0.19, 2.28, 1.85);
 const cvRotation = new THREE.Euler(0, Math.PI / 2, 0); 
 
+const tmPosition = new THREE.Vector3(-0.19, 2.28, 1.7);
+const tmRotation = new THREE.Euler(0, Math.PI / 2, 0); 
+
+
 const screenPosition = new THREE.Vector3(-0.195, 2.13, 1.55);
 const screenRotation = new THREE.Euler(0, Math.PI / 2, 0); 
 
 const closeIcon = createCloseIcon(closeIconPosition, closeIconRotation);
-const cvplane = createProjectPlane('/textures/cv-icon.jpg', cvPosition, cvRotation);
-const Screenplane = createScreen('/textures/homescreen.JPG', screenPosition, screenRotation);
+const closeVideo= createCloseIcon(closeVideoPosition, closeVideoRotation);
+const cvplane = createProjectPlane('/textures/screen/cv-icon.jpg', cvPosition, cvRotation);
+const tennisplane = createProjectPlane('/textures/screen/tm-icon.jpg', tmPosition, tmRotation);
+const Screenplane = createScreen('/textures/screen/homescreen.JPG', screenPosition, screenRotation);
+const muteIcon = createMuteIcon(closeSoundPosition, closeSoundRotation)
 
+closeVideo.visible = false
+muteIcon.visible = false;
 /**
  * Sizes
  */
@@ -355,14 +398,14 @@ const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
 }
-
+let isMuted = false;
 const zoomTargetPosition = new THREE.Vector3(1.40, 2.30, 1.57); 
 let isZoomedIn = false;
 
 // Add a click event listener to the canvas
 canvas.addEventListener('click', (event) => {
     event.preventDefault();
-
+    const video = Screenplane.material.map.image;
     // Check if the camera is zoomed in
  
         // Calculate mouse coordinates in normalized device coordinates (NDC)
@@ -388,29 +431,58 @@ canvas.addEventListener('click', (event) => {
                 window.open("https://www.linkedin.com/in/tguillotdev/");
             }else if (intersect.object ===  cvplane ) {
                 // Open cv link
-                console.log("yo")
                 window.open("https://theo-guillot-cv.tiiny.site/");
 
             } else if (intersect.object.name === "deskobj-monitor" || intersect.object === Screenplane  ) {
 
                 controls.target = new THREE.Vector3(Screenplane.position.x, Screenplane.position.y ,  Screenplane.position.z); 
                 if (isZoomedIn == false) {
-                    gsap.to(camera.position, { duration: 2, x: zoomTargetPosition.x, y: zoomTargetPosition.y, z: zoomTargetPosition.z });
+                    gsap.to(camera.position, { duration: 1.5, x: zoomTargetPosition.x, y: zoomTargetPosition.y, z: zoomTargetPosition.z });
                     isZoomedIn = true; // Set the flag to indicate that the camera is zoomed in
                     controls.enableZoom = false;
                 }
             } else if (intersect.object ===  closeIcon ) {
                 isZoomedIn = false;
                 gsap.to(camera.position, { duration: 2, x: baseCoordinates.x, y: baseCoordinates.y, z: baseCoordinates.z});
-                gsap.to(controls.target, { duration: 2, x: 0, y: 0, z: 0 });
+                gsap.to(controls.target, { duration: 1, x: 0, y: 0, z: 0 });
                 controls.enableZoom = true;
+
                 
+            } else if (intersect.object ===  closeVideo ) {
+                const video = Screenplane.material.map.image;
+                video.pause();
+                video.currentTime = 0;
+
+                Screenplane.material.map = textureLoader.load('/textures/screen/homescreen.JPG');
+                Screenplane.material.needsUpdate = true;
+                cvplane.visible = true;
+                tennisplane.visible = true;
+                closeVideo.visible = false;
+                muteIcon.visible = false;
+            }else if (intersect.object === tennisplane){
+                const videoTexture = createVideoTexture('/videos/TM-video.mp4');
+                Screenplane.material.map = videoTexture;
+                muteIcon.visible = true;
+                Screenplane.material.needsUpdate = true;
+                cvplane.visible = false;
+                tennisplane.visible = false;
+                closeVideo.visible = true;
+                muteIcon.visible = true;
+            } else if (intersect.object === muteIcon && isMuted){
+                video.muted = false;
+                const texture = textureLoader.load('/textures/screen/sound-off.png');
+                muteIcon.material.map = texture;
+                isMuted = false
+            } else if (intersect.object === muteIcon && !isMuted){
+                video.muted = true;
+                const texture = textureLoader.load('/textures/screen/sound-on.png');
+                muteIcon.material.map = texture;
+                isMuted = true
             }
     
         }
     
 });
-
 
 let isOverObject = false;
 
@@ -433,12 +505,11 @@ canvas.addEventListener('mousemove', (event) => {
 
     if (intersects.length > 0) {
         const intersect = intersects[0];
-
         // Check if the intersected object is the CV icon
-        if (isZoomedIn && intersect.object === cvplane) {
+        if (isZoomedIn && (intersect.object === cvplane || intersect.object === tennisplane)) {
             // Apply the outline effect for CV icon
             cvoutlinePass.selectedObjects = [intersect.object];
-            isOverCV = true; // Set flag to true
+            isOverCV = true; 
         } else {
             // If not intersecting with the CV icon, remove its outline effect
             cvoutlinePass.selectedObjects = [];
@@ -450,7 +521,9 @@ canvas.addEventListener('mousemove', (event) => {
             intersect.object.name === "linkedin-merged" || 
             intersect.object.name === "deskobj-monitor" ||
             intersect.object === Screenplane ||
-            intersect.object === closeIcon
+            intersect.object === closeIcon ||
+            intersect.object === closeVideo ||
+            intersect.object === muteIcon
         ) {
             // Apply the outline effect for GitHub, LinkedIn, or screen
             outlinePass.selectedObjects = [intersect.object];
@@ -470,8 +543,10 @@ canvas.addEventListener('mousemove', (event) => {
         // Check if isZoomedIn is true to show the close icon
         if (isZoomedIn) {
             closeIcon.visible = true;
+            
         } else {
             closeIcon.visible = false;
+            
         }
     } else {
         // If no intersections, remove outline effects and reset cursor style
@@ -543,10 +618,10 @@ outlinePass.edgeThickness = 2; // Adjust the thickness of the outline
 outlinePass.edgeStrength = 10; // Adjust the strength of the outline
 composer.addPass(outlinePass);
 const cvoutlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
-cvoutlinePass.visibleEdgeColor.set(0x0000ff); 
+cvoutlinePass.visibleEdgeColor.set(0xffffff); 
 cvoutlinePass.hiddenEdgeColor.set(0xffffff)
 cvoutlinePass.edgeThickness = 2; 
-cvoutlinePass.edgeStrength = 10; 
+cvoutlinePass.edgeStrength = 5; 
 composer.addPass(cvoutlinePass);
 
 const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);  
