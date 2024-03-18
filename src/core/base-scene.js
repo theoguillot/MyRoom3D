@@ -385,7 +385,7 @@ const screenRotation = new THREE.Euler(0, Math.PI / 2, 0);
 const closeIcon = createCloseIcon(closeIconPosition, closeIconRotation);
 const closeVideo= createCloseIcon(closeVideoPosition, closeVideoRotation);
 const cvplane = createProjectPlane('/textures/screen/cv-icon.jpg', cvPosition, cvRotation);
-const tennisplane = createProjectPlane('/textures/screen/tm-icon.jpg', tmPosition, tmRotation);
+const tennisplane = createProjectPlane('/textures/screen/tm-icon.JPG', tmPosition, tmRotation);
 const Screenplane = createScreen('/textures/screen/homescreen.JPG', screenPosition, screenRotation);
 const muteIcon = createMuteIcon(closeSoundPosition, closeSoundRotation)
 
