@@ -8,6 +8,8 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import TWEEN from '@tweenjs/tween.js'
+
 import gsap from 'gsap';
 
 /**
@@ -195,22 +197,8 @@ const rayOrigin = new THREE.Vector3(- 3, 0, 0)
 const rayDirection = new THREE.Vector3(10, 0, 0)
 rayDirection.normalize()
 
-const _CVLastTransform = {
-    position: new THREE.Vector3(),
-    rotation: new THREE.Quaternion()
-};
 
-const moveCVToFront = (_wrapper) => {
-    // Calculate the new position for the CV object
-    const direction = new THREE.Vector3();
-    let _CVLastPosition = new THREE.Vector3(); 
-    
-    _CVLastPosition.copy(_wrapper.position);
-    const globalPosition = _wrapper.getWorldPosition(new THREE.Vector3());
-    _CVLastTransform.position.copy(globalPosition);
-    _CVLastTransform.rotation.copy(_wrapper.rotation);
 
-};
 
 /**
  * Model
@@ -226,7 +214,124 @@ gltfLoader.load(
                     child.material = BlackPiecesMaterial;
                 }
             }
+            
+            //console.log(child.name)
         });
+        
+        const WChessboardPawnE2 = gltf.scene.children.find(child => child.name === 'WChessboardPawnE2');
+        const BChessboardPawnE7 = gltf.scene.children.find(child => child.name === 'BChessboardPawnE7');
+        const WChessboardBishop = gltf.scene.children.find(child => child.name === 'WChessboardBishop1');
+        const BChessboardKnigth = gltf.scene.children.find(child => child.name === 'BChessboardKnight1');
+        const WChessboardQueen = gltf.scene.children.find(child => child.name === 'WChessboardQueen');
+        const BChessboardKnigth2 = gltf.scene.children.find(child => child.name === 'BChessboardKnight2');
+        const BChessboardPawnF7= gltf.scene.children.find(child => child.name === 'BChessboardPawnF7');
+
+        const originalPositions = {
+            WChessboardPawnE2: WChessboardPawnE2.position.clone(),
+            BChessboardPawnE7: BChessboardPawnE7.position.clone(),
+            WChessboardBishop: WChessboardBishop.position.clone(),
+            BChessboardKnigth: BChessboardKnigth.position.clone(),
+            WChessboardQueen: WChessboardQueen.position.clone(),
+            BChessboardKnigth2: BChessboardKnigth2.position.clone(),
+            BChessboardPawnF7: BChessboardPawnF7.position.clone()
+        };
+        function resetPositions() {
+            WChessboardPawnE2.position.copy(originalPositions.WChessboardPawnE2);
+            BChessboardPawnE7.position.copy(originalPositions.BChessboardPawnE7);
+            WChessboardBishop.position.copy(originalPositions.WChessboardBishop);
+            BChessboardKnigth.position.copy(originalPositions.BChessboardKnigth);
+            WChessboardQueen.position.copy(originalPositions.WChessboardQueen);
+            BChessboardKnigth2.position.copy(originalPositions.BChessboardKnigth2);
+            BChessboardPawnF7.position.copy(originalPositions.BChessboardPawnF7);
+        }
+        const targetPosition = new THREE.Vector3(0.08, 4.172, 3.4); // Define the target position coordinates
+        const targetPosition2 = new THREE.Vector3(-0.03, 4.172, 3.39);
+        const targetPosition3 = new THREE.Vector3(0.34, 4.172, 3.72);
+        const targetPosition4 = new THREE.Vector3(0.2, 4.172, 3.25);
+        const targetPosition5 = new THREE.Vector3(-0.38, 4.172, 3.7);
+        const targetPosition6 = new THREE.Vector3(0.2, 4.172, 3.23);
+        const targetPosition7 = new THREE.Vector3(-0.2, 4.172, 3.92);
+
+        const duration = 1; // Duration of the animation in seconds
+
+        const easingFunction = TWEEN.Easing.Quadratic.InOut;
+        
+        // Create a Tween
+        function animateObject1() {
+        const tween = new TWEEN.Tween(WChessboardPawnE2.position)
+            .to(targetPosition, duration * 1000) // Convert duration to milliseconds
+            .easing(easingFunction)
+            .onComplete(() => {
+                animateObject2();
+            })
+            .start();
+        }
+        function animateObject2() {
+            const tween2 = new TWEEN.Tween(BChessboardPawnE7.position)
+                .to(targetPosition2, duration * 1000)
+                .easing(easingFunction)
+                .onComplete(() => {
+                    animateObject3();
+                })
+                .start();
+        }
+        function animateObject3() {
+            const tween3 = new TWEEN.Tween(WChessboardBishop.position)
+                .to(targetPosition3, duration * 1000)
+                .easing(easingFunction)
+                .onComplete(() => {
+                    animateObject4();
+                })
+                .start();
+        }
+        function animateObject4() {
+            const tween4 = new TWEEN.Tween(BChessboardKnigth.position)
+                .to(targetPosition4, duration * 1000)
+                .easing(easingFunction)
+                .onComplete(() => {
+                    animateObject5()
+                })
+                .start();
+        }
+        function animateObject5() {
+            const tween5 = new TWEEN.Tween(WChessboardQueen.position)
+                .to(targetPosition5, duration * 1000)
+                .easing(easingFunction)
+                .onComplete(() => {
+                    animateObject6()
+                })
+                .start();
+        }
+        function animateObject6() {
+            const tween6 = new TWEEN.Tween(BChessboardKnigth2.position)
+                .to(targetPosition6, duration * 1000)
+                .easing(easingFunction)
+                .onComplete(() => {
+                    animateObject7()
+                })
+                .start();
+        }
+        function animateObject7() {
+            const tween6 = new TWEEN.Tween(WChessboardQueen.position)
+                .to(targetPosition7, duration * 1000)
+                .easing(easingFunction)
+                .onComplete(() => {
+                    BChessboardPawnF7.visible = false
+                    setTimeout(() => {
+                        resetPositions(); // Reset positions after 3 seconds delay
+                        animateObject1(); // Start animation again
+                    }, 3000); 
+                })
+                .start();
+        }
+
+       
+        function animate() {
+            requestAnimationFrame(animate); 
+            TWEEN.update(); 
+        }
+        animate();
+        animateObject1();
         const bakedWalls = gltf.scene.children.find(child => child.name.startsWith('Wall'))
         bakedWalls.material = WallMaterial
 
@@ -407,7 +512,7 @@ canvas.addEventListener('click', (event) => {
     event.preventDefault();
     const video = Screenplane.material.map.image;
     // Check if the camera is zoomed in
- 
+
         // Calculate mouse coordinates in normalized device coordinates (NDC)
         const mouse = new THREE.Vector2();
         mouse.x = (event.clientX / sizes.width) * 2 - 1;
@@ -651,8 +756,8 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 /**
  * Animate
  */
-const clock = new THREE.Clock()
 
+const clock = new THREE.Clock()
 
 const tick = () =>
 {
