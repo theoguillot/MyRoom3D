@@ -9,7 +9,6 @@ import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import TWEEN from '@tweenjs/tween.js'
-
 import gsap from 'gsap';
 
 /**
@@ -686,6 +685,17 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeigh
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
+// Add a listener for the change event of OrbitControls
+// controls.addEventListener('change', () => {
+//     // Get the camera's current position
+//     const cameraPosition = camera.position.clone();
+
+//     // Check if the camera is below y = 0
+//     if (cameraPosition.y < 2) {
+//         // If below y = 0, reset its y position to 0
+//         camera.position.setY(2);
+//     }
+// });
 
 /**
  * Renderer
@@ -698,7 +708,7 @@ renderer.setPixelRatio(window.devicePixelRatio * 2)
 
 debugObject.clearColor = '#201919'
 renderer.setClearColor(debugObject.clearColor)
-gui.addColor(debugObject, 'clearColor')
+gui.addColor(debugObject, 'Background Color')
 gui.onChange(()=>
 {
     renderer.setClearColor(debugObject.clearColor)
