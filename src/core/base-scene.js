@@ -706,12 +706,12 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(window.devicePixelRatio * 2)
 
-debugObject.clearColor = '#201919'
-renderer.setClearColor(debugObject.clearColor)
-gui.addColor(debugObject, 'Background Color')
+debugObject.Background_Color = '#201919'
+renderer.setClearColor(debugObject.Background_Color)
+gui.addColor(debugObject, 'Background_Color')
 gui.onChange(()=>
 {
-    renderer.setClearColor(debugObject.clearColor)
+    renderer.setClearColor(debugObject.Background_Color)
 })
 // Render Target
 const renderTarget = new THREE.WebGLRenderTarget(
