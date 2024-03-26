@@ -258,7 +258,7 @@ gltfLoader.load(
         
         // Create a Tween
         function animateObject1() {
-        const tween = new TWEEN.Tween(WChessboardPawnE2.position)
+        new TWEEN.Tween(WChessboardPawnE2.position)
             .to(targetPosition, duration * 1000) // Convert duration to milliseconds
             .easing(easingFunction)
             .onComplete(() => {
@@ -267,7 +267,7 @@ gltfLoader.load(
             .start();
         }
         function animateObject2() {
-            const tween2 = new TWEEN.Tween(BChessboardPawnE7.position)
+            new TWEEN.Tween(BChessboardPawnE7.position)
                 .to(targetPosition2, duration * 1000)
                 .easing(easingFunction)
                 .onComplete(() => {
@@ -276,7 +276,7 @@ gltfLoader.load(
                 .start();
         }
         function animateObject3() {
-            const tween3 = new TWEEN.Tween(WChessboardBishop.position)
+            new TWEEN.Tween(WChessboardBishop.position)
                 .to(targetPosition3, duration * 1000)
                 .easing(easingFunction)
                 .onComplete(() => {
@@ -285,7 +285,7 @@ gltfLoader.load(
                 .start();
         }
         function animateObject4() {
-            const tween4 = new TWEEN.Tween(BChessboardKnigth.position)
+            new TWEEN.Tween(BChessboardKnigth.position)
                 .to(targetPosition4, duration * 1000)
                 .easing(easingFunction)
                 .onComplete(() => {
@@ -294,7 +294,7 @@ gltfLoader.load(
                 .start();
         }
         function animateObject5() {
-            const tween5 = new TWEEN.Tween(WChessboardQueen.position)
+            new TWEEN.Tween(WChessboardQueen.position)
                 .to(targetPosition5, duration * 1000)
                 .easing(easingFunction)
                 .onComplete(() => {
@@ -303,7 +303,7 @@ gltfLoader.load(
                 .start();
         }
         function animateObject6() {
-            const tween6 = new TWEEN.Tween(BChessboardKnigth2.position)
+            new TWEEN.Tween(BChessboardKnigth2.position)
                 .to(targetPosition6, duration * 1000)
                 .easing(easingFunction)
                 .onComplete(() => {
@@ -312,7 +312,7 @@ gltfLoader.load(
                 .start();
         }
         function animateObject7() {
-            const tween6 = new TWEEN.Tween(WChessboardQueen.position)
+           new TWEEN.Tween(WChessboardQueen.position)
                 .to(targetPosition7, duration * 1000)
                 .easing(easingFunction)
                 .onComplete(() => {
