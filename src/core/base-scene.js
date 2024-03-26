@@ -456,7 +456,7 @@ function createMuteIcon(position, rotation, alpha) {
     var muteTexture = textureLoader.load('/textures/screen/sound-on.png');
     var unmuteTexture = textureLoader.load('/textures/screen/sound-off.png');
 
-    const texture = new THREE.TextureLoader().load('/textures/screen/sound-off.png');
+    const texture = new THREE.TextureLoader().load('/textures/screen/sound-on.png');
     const material = new THREE.MeshBasicMaterial({ map: texture });
     const closeIcon = new THREE.Mesh(circleGeometry, material);
     closeIcon.position.copy(position);
@@ -564,6 +564,10 @@ canvas.addEventListener('click', (event) => {
                 tennisplane.visible = true;
                 closeVideo.visible = false;
                 muteIcon.visible = false;
+                isMuted = false;
+                const texture = textureLoader.load('/textures/screen/sound-on.png');
+                muteIcon.material.map = texture;
+                
             }else if (intersect.object === tennisplane){
                 const videoTexture = createVideoTexture('/videos/TM-video.mp4');
                 Screenplane.material.map = videoTexture;
@@ -575,12 +579,12 @@ canvas.addEventListener('click', (event) => {
                 muteIcon.visible = true;
             } else if (intersect.object === muteIcon && isMuted){
                 video.muted = false;
-                const texture = textureLoader.load('/textures/screen/sound-off.png');
+                const texture = textureLoader.load('/textures/screen/sound-on.png');
                 muteIcon.material.map = texture;
                 isMuted = false
             } else if (intersect.object === muteIcon && !isMuted){
                 video.muted = true;
-                const texture = textureLoader.load('/textures/screen/sound-on.png');
+                const texture = textureLoader.load('/textures/screen/sound-off.png');
                 muteIcon.material.map = texture;
                 isMuted = true
             }
