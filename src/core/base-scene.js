@@ -319,6 +319,7 @@ gltfLoader.load(
                     setTimeout(() => {
                         resetPositions(); // Reset positions after 3 seconds delay
                         animateObject1(); // Start animation again
+                        BChessboardPawnF7.visible = true
                     }, 3000); 
                 })
                 .start();
