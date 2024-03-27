@@ -11,8 +11,12 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import TWEEN from '@tweenjs/tween.js'
 import gsap from 'gsap';
 import { inject } from '@vercel/analytics';
+import { injectSpeedInsights } from '@vercel/speed-insights';
+
 
 inject();
+injectSpeedInsights();
+
 /**
  * Base
  */
