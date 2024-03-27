@@ -10,8 +10,9 @@ import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectio
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import TWEEN from '@tweenjs/tween.js'
 import gsap from 'gsap';
-import { Analytics } from "@vercel/analytics/react"
+import { inject } from '@vercel/analytics';
 
+inject();
 /**
  * Base
  */
